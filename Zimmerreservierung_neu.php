@@ -9,6 +9,8 @@ session_start();
 if ($_SERVER["REQUEST_METHOD"] == "POST"){ // wenn das Formular abgegeben wurde. 
     $date1=$_POST['date1'];
     $date2=$_POST['date2'];
+  
+
 
  if(!empty($date1) || !empty($date2)){
     if($date1>$date2){
@@ -48,19 +50,43 @@ include ("adapt_nav.php");
 require_once("mysql.php");
 $mysql = new mysqli($host, $user, $passwort,$name);
 
-$stmt1="SELECT id FROM users";
-$result=$mysql->query($stmt1);
-$tmp="2";
-/*while($row=$result->fetch_array()){
-  if($row["id"]==$_SESSION["name"]){
-$tmp=$row["id"];
-  }
-}*/
-var_dump($_POST["fn"]);
 
-if(isset($_POST["submit"])){
-$stmt2=$mysql->prepare("INSERT INTO reservierung (vorname, nachname, username, ankunft, abfahrt) VALUES (?,?,?,?,?)");
-$stmt2->bind_param ("sssss",$_POST["fn"], $_POST["ln"],$_POST["username"], $_POST["date1"], $_POST["date2"]);
+$stmt="SELECT id FROM users";
+$result=$mysql->query($stmt);
+$tmp="";
+
+if(isset($_SESSION["name"])){
+  $tmp_session= $_SESSION["name"];
+$stmt3="SELECT id, username FROM users WHERE username = '$tmp_session' ";
+
+$result3=$mysql->query($stmt3);
+
+//echo "<pre>" . print_r($result3->fetch_array(), true) . "</pre>";
+
+$id="0";
+while($row=$result3->fetch_array()){
+  $id= $row["id"];
+  
+}
+
+
+}
+
+/*while($row=$result->fetch_array()){
+  
+
+
+$tmp=$row["id"];
+  
+}*/
+
+
+echo "Datei befindet sich nicht Db";
+
+if(isset($submit)){
+  echo "Datei befindet sich in post";
+$stmt2=$mysql->prepare("INSERT INTO reservierung (vorname, nachname, username, ankunft, abfahrt, user_id) VALUES (?,?,?,?,?,?)");
+$stmt2->bind_param ("sssssi",$_POST["fn"], $_POST["ln"],$_POST["username"], $_POST["date1"], $_POST["date2"],$id);
 $stmt2->execute();
 $stmt2->close();
 echo "Datei befindet sich in Db";
@@ -201,9 +227,6 @@ echo "Datei befindet sich in Db";
                     </button>
 
 
-<?php
-var_dump($_POST);
-?>
 
 
                 </form>

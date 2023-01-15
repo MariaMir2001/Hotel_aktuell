@@ -51,6 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" ) {
     $sql->fetch();
     $sql->close();
     $mysql->close();
+   
 
     $id = $tab["id"];
     $admin = $tab["admin"]; //fängt den boolean wert des admins ab 
