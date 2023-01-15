@@ -1,4 +1,5 @@
 
+
 <?php
 
 session_start(); 
@@ -40,8 +41,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){ // wenn das Formular abgegeben wurde.
 </head>
 
 <body>
+<form  method="post">
 <?php
 include ("adapt_nav.php"); 
+
+require_once("mysql.php");
+$mysql = new mysqli($host, $user, $passwort,$name);
+
+$stmt1="SELECT id FROM users";
+$result=$mysql->query($stmt1);
+$tmp="2";
+/*while($row=$result->fetch_array()){
+  if($row["id"]==$_SESSION["name"]){
+$tmp=$row["id"];
+  }
+}*/
+var_dump($_POST["fn"]);
+
+if(isset($_POST["submit"])){
+$stmt2=$mysql->prepare("INSERT INTO reservierung (vorname, nachname, username, ankunft, abfahrt) VALUES (?,?,?,?,?)");
+$stmt2->bind_param ("sssss",$_POST["fn"], $_POST["ln"],$_POST["username"], $_POST["date1"], $_POST["date2"]);
+$stmt2->execute();
+$stmt2->close();
+echo "Datei befindet sich in Db";
+}
+
+
 ?>
    
 
@@ -58,15 +83,15 @@ include ("adapt_nav.php");
                 <!--- VORNAME --->
   <div class="col-md-4">
     <label for="validationCustom01" class="form-label">First name</label>
-    <input type="text" class="form-control" id="validationCustom01" value="Mark" required>
+    <input type="text" class="form-control" name="fn" id="validationCustom01" value="Mark" required>
     <div class="valid-feedback">
       Looks good!
     </div>
   </div>
                      
   <div class="col-md-4">
-    <label for="validationCustom02" class="form-label">Last name</label>
-    <input type="text" class="form-control" id="validationCustom02" value="Otto" required>
+    <label for="validationCustom02" class="form-label"  >Last name</label>
+    <input type="text" class="form-control" name="ln" id="validationCustom02" value="Otto" required>
     <div class="valid-feedback">
       Looks good!
     </div>
@@ -76,8 +101,8 @@ include ("adapt_nav.php");
   <div class="col-md-4">
     <label for="validationCustomUsername" class="form-label">Username</label>
     <div class="input-group has-validation">
-      <span class="input-group-text" id="inputGroupPrepend">@</span>
-      <input type="text" class="form-control" id="validationCustomUsername" aria-describedby="inputGroupPrepend" required>
+      <span class="input-group-text"  id="inputGroupPrepend">@</span>
+      <input type="text" class="form-control" name="username" id="validationCustomUsername" aria-describedby="inputGroupPrepend" required>
       <div class="invalid-feedback">
         Please choose a username.
       </div>
@@ -108,11 +133,11 @@ include ("adapt_nav.php");
     </div>
   </div>
 
-</form>
+
 
                 <!---Anreise --->
 
-                <form action="" method="POST">
+                
 
                     <label for="date1">Anreise </label>
 
@@ -171,9 +196,16 @@ include ("adapt_nav.php");
                         <textarea name="message" style="width:200px; height:50px;"></textarea>
                     </div>
 
-                    <button class="btn btn-primary" type="submit">
+                    <button class="btn btn-primary" name="submit" type="submit">
                         <break>Submit</break>
                     </button>
+
+
+<?php
+var_dump($_POST);
+?>
+
+
                 </form>
 
 

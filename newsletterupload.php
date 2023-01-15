@@ -27,6 +27,7 @@ require_once("mysql.php");
 $mysql = new mysqli($host, $user, $passwort,$name);
 $timestamp=date(DATE_RFC822);
 
+
 /*$stmt = $mysql->prepare("INSERT INTO news (bildpfad,article,date) VALUES (?, ?,?)");
           $stmt->bind_param ("sss",$_POST["image"], $_POST["Beitrag"],$timestamp);*/
 
@@ -63,6 +64,7 @@ if (!empty($_FILES['image'])) {
 $timestamp=time();
 $datum = date("d.m.Y",$timestamp);
 var_dump($datum);
+
 $mysql = new mysqli($host, $user, $passwort,$name);
     $stmt=$mysql->prepare("INSERT INTO news (article,bildpfad, date) VALUES (?,?,?)");
 
@@ -85,7 +87,6 @@ $mysql = new mysqli($host, $user, $passwort,$name);
     <input type="file" name="image" />
     <input type="submit" value="Abschicken!"    class="form-control"/>
 </form>
-
 
 
 
