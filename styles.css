@@ -1,0 +1,65 @@
+
+h1{
+
+   
+    text-align: center;
+    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: 40px;
+    color: darkblue;
+   
+   
+}
+
+
+h2{
+    text-align: center;
+   color: darkblue;
+  }
+  
+
+  b{
+    color: darkcyan
+  }
+
+
+  #salutation,#prename,#surname,#email, #username,#password1,#password2,#newsletter,#datenschutz{
+    background-color: white;
+  
+}
+
+footer{
+    text-align: center;
+    padding-top: 350px;
+  }
+
+
+
+  
+#headerCarousel, .carousel-item {
+    height: 500px;
+}
+.carousel-item img {
+    min-width: 100%;
+    height: 500px;
+    overflow: hidden;
+}
+.seitenAbschnitt {
+    min-height: 500px;
+}
+.link-white {
+    color: white;
+}
+.link-white:hover {
+    color: #aaa;
+    text-decoration: none;
+}
+.social-icon {
+    max-width: 130px;
+    height: auto;
+    padding: 20px;
+}
+
+
+
+
+
