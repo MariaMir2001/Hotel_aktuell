@@ -1,15 +1,17 @@
 <?php
 session_start(); 
 
+include ("adapt_nav.php"); 
+
 //Errorarray, falls Daten falsch eingegeben wurden
 $errors = []; 
 $errors["password"] = false; 
 $errors["password2"] = false;
-$errors["inaktiv"] = false; 
+
 
     
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] == "POST" ) {
     $pw1 = $_POST["password"];
     $pw2 = $_POST["password2"];
     $error = "Die Passwörter stimmen nicht überein";   
@@ -30,13 +32,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href = "hilfeseite.css">
     <title>Profilverwaltung</title>
 </head>
-<body>
-
-<?php
-include ("adapt_nav.php"); 
-?>
-           
-      
 
 <body>
     <div class="container">
@@ -54,13 +49,15 @@ include ("adapt_nav.php");
 
       require_once("mysql.php");
 
-      //Alte Daten: 
-      $tab = []; //leeres Array, um die Daten der sql abfrage zu speichern
-      $sql = $mysql->prepare ("SELECT vorname, nachname, id,username, email, inaktiv FROM users where id = 1"); 
-       $sql->execute();
-       $sql->store_result();
-       $sql->bind_result($tab["fname"], $tab["lname"], $tab["id"],$tab["username"],$tab["useremail"],$tab["inaktiv"]); 
-       $sql->fetch();
+                //Alte Daten: 
+                $uw = $_SESSION["uw"]; 
+
+                $tab = []; //leeres Array, um die Daten der sql abfrage zu speichern
+                $sql = $mysql->prepare ("SELECT vorname, nachname, id,username, email, inaktiv FROM users where id = $uw "); 
+                $sql->execute();
+                $sql->store_result();
+                $sql->bind_result($tab["fname"], $tab["lname"], $tab["id"],$tab["username"],$tab["useremail"],$tab["inaktiv"]); 
+                $sql->fetch();
     
     
 
@@ -71,70 +68,61 @@ include ("adapt_nav.php");
                 //change firstname
                 if(!empty($_POST["fn"])){
                     $fname = $_POST["fn"];
+                    $stmt = $mysql->prepare("UPDATE users SET vorname='$fname' WHERE id= $uw ");
+                    $stmt->execute();
                 }
-                else{
-                    $fname = $tab["fname"]; 
-                }
+               
 
                 //change lastname
                 if(!empty($_POST["ln"])){
                     $lname = $_POST["ln"];
+                    $stmt = $mysql->prepare("UPDATE users SET nachname ='$lname' WHERE id= $uw ");
+                    $stmt->execute();
                 }
-                else{
-                    $lname = $tab["lname"]; 
-                }
-
-
+               
 
               
                 //change username
                 if (!empty($_POST["username"])){
                    $username = $_POST["username"]; 
+                   $stmt = $mysql->prepare("UPDATE users SET username ='$username' WHERE id= $uw ");
+                   $stmt->execute();
                  }
-                 else{
-                     $username = $tab["username"]; 
-                 }
+                
                  
                  //change password
          
                  //Password 1 und 2 beide eingesetzt und übereinstimmend- 
                  if (!empty($_POST["password"]) && !empty($_POST["password2"]) && $_POST["password"] == $_POST["password2"]){
                  
-                     $password = $_POST["password"]; 
+                     
+                    $password = $_POST["password"]; 
+                    $hash = password_hash($password, PASSWORD_BCRYPT);
+                    $stmt = $mysql->prepare("UPDATE users SET password = '$hash' WHERE id= $uw ");
+                    $stmt->execute();
                    }
-                   else{
-         //wenn kein passwort eingesetzt wird, dann wird ein gehashtes pw gehasht. Ich kann diese funktion einfach auf eine andere Website verlagern. 
-                       $password = $tab["password"]; 
-                   }
+     
          
                  
                   //E-Mail change
          
                   if (!empty($_POST["email"])){
-                     $email = $_POST["email"]; 
+                    $email = $_POST["email"]; 
+                    $stmt = $mysql->prepare("UPDATE users SET email = '$email' WHERE id= $uw ");
+                    $stmt->execute();
                    }
-                   else{
-                       $email = $tab["useremail"]; 
-                   }
+                 
          
-                   //inaktivität change
-         
-                   if (!empty($_POST["inaktiv"])){
-                     $inaktiv = $_POST["inaktiv"]; 
-                   }
-                   else {
-                     $inaktiv = $tab["inaktiv"]; 
-                   }
                    
-               
-           
-                   $hash = password_hash($password, PASSWORD_BCRYPT);
-                  
-                   $stmt = $mysql->prepare("UPDATE users SET vorname = '$fname' , nachname = '$lname' , username='$username', email = '$email', inaktiv = '$inaktiv' , password = '$hash' WHERE id=1 ");
-         
-                
-         
-                   $stmt->execute();
+
+                   if (!empty($_POST["inaktiv"])){
+                    $inaktiv = $_POST["inaktiv"];  
+                    $stmt = $mysql->prepare("UPDATE users SET  inaktiv = '$inaktiv' WHERE id= $uw ");
+                    $stmt->execute();
+
+                    }
+                 
+    
                    $sql->close();
                    $mysql->close(); 
                   
@@ -163,7 +151,7 @@ include ("adapt_nav.php");
 
 
          <!--- Vorname !--->
-             <div class="form-floating mb-3">
+             <div class="form-floating mb-3"> <br>
              <h6>Vorname</h6>
              <h5 class = "form-control" ><?PHP if(isset($_SESSION) && isset($_SESSION["admin"]) ){  echo $tab["fname"];   } ?></h5>
                 <input type="text" class="form-control" name="fn" id="fn" placeholder="Max">
@@ -171,7 +159,7 @@ include ("adapt_nav.php");
             </div>
 
             <!--- Nachname !--->
-            <div class="form-floating mb-3">
+            <div class="form-floating mb-3"> <br>
                 <h6>Nachname</h6>
                 <h5 class = "form-control" ><?PHP if(isset($_SESSION) && isset($_SESSION["admin"]) ){  echo $tab["lname"];   } ?></h5>
                 <input type="text" class="form-control" name="ln" id="ln" placeholder="Mustermann">
@@ -190,7 +178,7 @@ include ("adapt_nav.php");
          
 
          <!--- Username !--->
-         <div class="form-floating mb-3">
+         <div class="form-floating mb-3">  <br>
          <h6>Username</h6>
          <h5 class = "form-control" ><?PHP if(isset($_SESSION) && isset($_SESSION["admin"]) ){  echo $tab["username"];   } ?></h5>
          
@@ -199,8 +187,8 @@ include ("adapt_nav.php");
          </div>
          <!--- Passwort 1 --->
          
-         <div class="form-floating mb-3">
-             <p>Passwort</p>
+                    <div class="form-floating mb-3">  <br>
+                     <p>Passwort</p>
                          <input type="password" name="password" id="password" class="form-control ">  <?php if ($errors['password']) echo 'is-invalid';
                                     if (isset($pw1)) {
          
@@ -217,27 +205,36 @@ include ("adapt_nav.php");
         
                      <!--- Passwort 2 !--->
                    
-                     <div class="form-floating mb-3">
+                     <div class="form-floating mb-3">  <br>
                      <p>Passwort erneut eingeben</p>
                          <input type="password" class="form-control <?php if ($errors['password2']) echo 'is-invalid'; ?>" name="password2" id="password2">
                          
                      </div>
-         
+
+                       <!--- Aktivität!--->
+                        <div class="form-floating mb-3">
+                        <p>Aktivität</p>
+                        
+                            <input type="text" class="form-control" name="inaktiv" id="inaktiv">
+                        
+                        </div>
+
+                    
          
                         
          
-         <!--- AGB Button--->
-         <div class="form-check mb-3">
-             <input type="checkbox" class="form-check-input" name="agree" id="agree">
-             <label class="form-check-label" for="agree">Hiermit bestätige ich, dass ich die Daten bearbeiten möchte</label>
-         </div>
-         <button class="btn btn-primary" type="submit">Submit</button>
-         </form>
-         
-         </form>
-         
-         
-            
+                    <!--- AGB Button--->
+                    <div class="form-check mb-3">
+                        <input type="checkbox" class="form-check-input" name="agree" id="agree">
+                        <label class="form-check-label" for="agree">Hiermit bestätige ich, dass ich die Daten bearbeiten möchte</label>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Submit</button>
+                    </form>
+                    
+                    </form>
+                    
+                    
+                        
             
          
          

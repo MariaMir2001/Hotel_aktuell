@@ -1,15 +1,17 @@
 <?php
-session_start(); 
-include "adapt_nav.php"?>
 
-<?php
+session_start(); 
+
 require_once ('mysql.php'); //to retrieve connection details
+ // include ("adapt_nav.php");  
 
 /*
 $sql = "SELECT * FROM users";
 $result = $mysql->query($sql);
 echo "<pre>" . print_r($result->fetch_array(), true) . "</pre>";
 */
+
+//Man kann die Userverwaltung nur durchführen, 
 
 
 $sql =
@@ -33,14 +35,20 @@ $result = $mysql->query($sql);
 <title>FAQ</title>
 
 
- 
-
 </head>
 
 <body> 
+    
     <h1>User verwalten</h1>
 
     <h2>Liste aller Userinnen anzeigen</h2>
+
+    <?php 
+ 
+
+
+if (isset($_SESSION) && $_SESSION["admin"] == 1){ ?>
+ 
 
     <form method="POST">
 
@@ -54,14 +62,17 @@ $tmp="";
 
      while ($row = $result->fetch_array()) { 
  //_assoc works, _object not
+ if ($row['admin'] == 0 ){
 
 echo "<option>" . $row['username'] . "</option> ";
 echo "<br>" ;
+
 
 if($row['username']==$_POST['dropdown']){
     $tmp=$row;
 }
 }
+     }
 
 
 
@@ -69,22 +80,35 @@ if($row['username']==$_POST['dropdown']){
 ?>  
 </select>
 
+
+
 <button class="btn btn-primary" name="select" type="select">Select</button>
-<table border="1">
+
 <?php
 
 
+ //wenn ein User vom ADMIN ausgesucht wurde 
+
 if(isset($_POST["select"])){
-    echo "<tr>";
-echo "<td>" . $tmp["username"] . "</td>";
-echo "<td>" . $tmp["vorname"] . "</td>";
-echo "<td>" . $tmp["nachname"] . "</td>";
-echo "<td>" . $tmp["email"] . "</td>";
-echo "</tr>"; 
+
+    if (isset($_SESSION) && $_SESSION["admin"] == 1)
+  
+$_SESSION["uw"] = $tmp["id"]; 
+ 
+echo "<br> Username: "; 
+echo $tmp['username'];
+
+
+?> <a href= "Profilverwaltung.php">Bearbeiten</a> 
+
+<?php 
+
 
 }
-?>
-</table>
+
+
+} ?>
+
 
      
 </form>
@@ -94,4 +118,3 @@ echo "</tr>";
    
     
 </body>
-

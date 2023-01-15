@@ -34,7 +34,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") { //Fehlermeldungen, falls Felder leer
 
 
 //Login:
-if ($_SERVER["REQUEST_METHOD"] == "POST") { 
+if ($_SERVER["REQUEST_METHOD"] == "POST" ) { 
 
     require_once('mysql.php'); 
     $tab = []; 
@@ -57,6 +57,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $inaktiv = $tab["inaktiv"];
 
     $username = $tab["username"];
+
+    if ($tab["inaktiv"] == 1){
+        echo "Dieser User wurde gesperrt. Bitte kontaktieren Sie den Admin";
+    }
 
    
 
